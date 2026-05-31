@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音乐和弦识别训练</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎵 音乐和弦识别训练</h1>
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="game">🎮 游戏</button>
+                <button class="tab-btn" data-tab="piano">🎹 钢琴</button>
+                <button class="tab-btn" data-tab="progression">🎼 和弦进行</button>
+                <button class="tab-btn" data-tab="leaderboard">🏆 排行榜</button>
+            </div>
+        </header>
+
+        <main>
+            <div class="tab-content active" id="game-tab">
+                <div class="game-area">
+                    <div class="stats-bar">
+                        <div class="stat-item">
+                            <span class="label">得分:</span>
+                            <span id="score" class="value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="label">连击:</span>
+                            <span id="streak" class="value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="label">时间:</span>
+                            <span id="timer" class="value">60</span>
+                        </div>
+                    </div>
+
+                    <div class="daily-challenge-card">
+                        <h3>📅 今日挑战</h3>
+                        <p id="challengeName">加载中...</p>
+                        <p id="challengeDesc" class="desc"></p>
+                        <div class="challenge-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="challengeProgress"></div>
+                            </div>
+                            <span id="challengeText">0/0</span>
+                        </div>
+                    </div>
+
+                    <div class="chord-display">
+                        <button id="playBtn" class="play-btn">
+                            🔊 播放和弦
+                        </button>
+                        <p class="hint">点击播放，然后选择正确的和弦名称</p>
+                    </div>
+
+                    <div class="options-grid" id="optionsGrid"></div>
+                    <div class="feedback" id="feedback"></div>
+                </div>
+
+                <div class="sidebar">
+                    <div class="progress-card">
+                        <h3>📊 学习进度</h3>
+                        <div class="progress-item">
+                            <span>总答题数:</span>
+                            <span id="totalGames">0</span>
+                        </div>
+                        <div class="progress-item">
+                            <span>正确率:</span>
+                            <span id="accuracy">0%</span>
+                        </div>
+                        <div class="progress-item">
+                            <span>最高连击:</span>
+                            <span id="bestStreak">0</span>
+                        </div>
+                        <div class="progress-item">
+                            <span>今日排名:</span>
+                            <span id="userRank">#--</span>
+                        </div>
+                    </div>
+
+                    <div class="wrong-answers-card">
+                        <h3>❌ 错题库</h3>
+                        <div id="wrongAnswersList" class="wrong-list"></div>
+                    </div>
+
+                    <div class="game-controls">
+                        <button id="startBtn" class="start-btn">开始游戏</button>
+                        <button id="submitScoreBtn" class="submit-btn">提交分数</button>
+                        <button id="resetBtn" class="reset-btn">重置进度</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="piano-tab">
+                <div class="piano-container">
+                    <h2>🎹 钢琴键盘</h2>
+                    <p class="piano-hint">点击琴键或使用键盘(A-K)演奏，支持和弦试弹</p>
+                    
+                    <div class="piano-keys" id="pianoKeys"></div>
+                    
+                    <div class="piano-controls">
+                        <div class="chord-selector">
+                            <label>选择和弦类型:</label>
+                            <select id="chordTypeSelect">
+                                <option value="major">大三和弦</option>
+                                <option value="minor">小三和弦</option>
+                                <option value="augmented">增三和弦</option>
+                                <option value="diminished">减三和弦</option>
+                                <option value="dominant7">属七和弦</option>
+                                <option value="major7">大七和弦</option>
+                                <option value="minor7">小七和弦</option>
+                            </select>
+                        </div>
+                        <button id="playSelectedChord" class="play-btn">播放选中和弦</button>
+                        <button id="clearNotes" class="reset-btn">清除</button>
+                    </div>
+                    
+                    <div class="notes-display">
+                        <span>当前音符: </span>
+                        <span id="currentNotes" class="notes">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="progression-tab">
+                <div class="progression-container">
+                    <h2>🎼 和弦进行训练</h2>
+                    
+                    <div class="progression-selector">
+                        <label>选择和弦进行:</label>
+                        <select id="progressionSelect">
+                            <option value="">加载中...</option>
+                        </select>
+                        <button id="playProgression" class="play-btn">播放进行</button>
+                    </div>
+
+                    <div class="custom-progression">
+                        <h3>创建自定义和弦进行</h3>
+                        <input type="text" id="progressionName" placeholder="输入名称...">
+                        <div class="chord-builder">
+                            <select id="chord1">
+                                <option value="大三和弦">大三和弦</option>
+                                <option value="小三和弦">小三和弦</option>
+                                <option value="属七和弦">属七和弦</option>
+                                <option value="大七和弦">大七和弦</option>
+                                <option value="小七和弦">小七和弦</option>
+                            </select>
+                            <select id="chord2">
+                                <option value="大三和弦">大三和弦</option>
+                                <option value="小三和弦">小三和弦</option>
+                                <option value="属七和弦">属七和弦</option>
+                                <option value="大七和弦">大七和弦</option>
+                                <option value="小七和弦">小七和弦</option>
+                            </select>
+                            <select id="chord3">
+                                <option value="大三和弦">大三和弦</option>
+                                <option value="小三和弦">小三和弦</option>
+                                <option value="属七和弦">属七和弦</option>
+                                <option value="大七和弦">大七和弦</option>
+                                <option value="小七和弦">小七和弦</option>
+                            </select>
+                            <select id="chord4">
+                                <option value="大三和弦">大三和弦</option>
+                                <option value="小三和弦">小三和弦</option>
+                                <option value="属七和弦">属七和弦</option>
+                                <option value="大七和弦">大七和弦</option>
+                                <option value="小七和弦">小七和弦</option>
+                            </select>
+                        </div>
+                        <button id="saveProgression" class="start-btn">保存和弦进行</button>
+                    </div>
+
+                    <div class="ear-training">
+                        <h3>👂 听力训练模式</h3>
+                        <p>聆听完整的和弦进行，然后按正确顺序选择和弦</p>
+                        <button id="startEarTraining" class="start-btn">开始听力训练</button>
+                        <div id="earTrainingArea" class="ear-training-area"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="leaderboard-tab">
+                <div class="leaderboard-container">
+                    <h2>🏆 排行榜</h2>
+                    
+                    <div class="leaderboard-stats">
+                        <div class="stat-box">
+                            <span class="stat-number" id="lbTotalGames">0</span>
+                            <span class="stat-label">总场次</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-number" id="lbAccuracy">0%</span>
+                            <span class="stat-label">正确率</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-number" id="lbBestStreak">0</span>
+                            <span class="stat-label">最高连击</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-number" id="lbRank">#--</span>
+                            <span class="stat-label">当前排名</span>
+                        </div>
+                    </div>
+
+                    <div class="leaderboard-list" id="leaderboardList"></div>
+
+                    <div class="submit-score-form">
+                        <h3>提交你的分数</h3>
+                        <input type="text" id="playerName" placeholder="输入你的名字...">
+                        <input type="number" id="playerScore" placeholder="输入分数..." readonly>
+                        <button id="submitToLeaderboard" class="start-btn">提交到排行榜</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="gameOverModal" class="modal">
+        <div class="modal-content">
+            <h2>游戏结束!</h2>
+            <div class="final-stats">
+                <p>最终得分: <span id="finalScore">0</span></p>
+                <p>正确答案: <span id="finalCorrect">0</span></p>
+                <p>最高连击: <span id="finalStreak">0</span></p>
+            </div>
+            <button id="restartBtn" class="start-btn">再来一局</button>
+            <button id="submitAndRestartBtn" class="submit-btn">提交分数并继续</button>
+        </div>
+    </div>
+
+    <div id="challengeModal" class="modal">
+        <div class="modal-content">
+            <h2>🎉 恭喜完成每日挑战!</h2>
+            <p id="challengeReward">获得奖励: +50分</p>
+            <button class="start-btn" onclick="closeChallengeModal()">太棒了!</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

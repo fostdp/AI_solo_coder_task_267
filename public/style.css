@@ -1,0 +1,739 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: #333;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    color: white;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+.tabs {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.tab-btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 25px;
+    background: rgba(255,255,255,0.2);
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    backdrop-filter: blur(10px);
+}
+
+.tab-btn:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+.tab-btn.active {
+    background: white;
+    color: #667eea;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+main {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 30px;
+}
+
+#piano-tab, #progression-tab, #leaderboard-tab {
+    grid-column: 1 / -1;
+}
+
+.game-area {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+}
+
+.stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.stat-item .label {
+    font-size: 0.9rem;
+    margin-right: 10px;
+    opacity: 0.9;
+}
+
+.stat-item .value {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.daily-challenge-card {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.daily-challenge-card h3 {
+    margin-bottom: 10px;
+    color: #d35400;
+}
+
+.daily-challenge-card .desc {
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.challenge-progress {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 12px;
+    background: rgba(0,0,0,0.1);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #e74c3c, #c0392b);
+    border-radius: 6px;
+    transition: width 0.3s;
+    width: 0%;
+}
+
+.chord-display {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.play-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 20px 60px;
+    font-size: 1.3rem;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.play-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+.play-btn:active {
+    transform: translateY(-1px);
+}
+
+.play-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.hint {
+    margin-top: 15px;
+    color: #666;
+    font-size: 1rem;
+}
+
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.option-btn {
+    padding: 20px;
+    font-size: 1.1rem;
+    border: 3px solid #e0e0e0;
+    border-radius: 12px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.option-btn:hover:not(:disabled) {
+    border-color: #667eea;
+    background: #f8f9ff;
+}
+
+.option-btn.correct {
+    background: #4caf50;
+    color: white;
+    border-color: #4caf50;
+}
+
+.option-btn.wrong {
+    background: #f44336;
+    color: white;
+    border-color: #f44336;
+}
+
+.option-btn:disabled {
+    cursor: not-allowed;
+}
+
+.feedback {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    min-height: 30px;
+}
+
+.feedback.correct {
+    color: #4caf50;
+}
+
+.feedback.wrong {
+    color: #f44336;
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.progress-card, .wrong-answers-card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.progress-card h3, .wrong-answers-card h3 {
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 1.1rem;
+}
+
+.progress-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.progress-item:last-child {
+    border-bottom: none;
+}
+
+.progress-item span:last-child {
+    font-weight: bold;
+    color: #667eea;
+}
+
+.wrong-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.wrong-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+}
+
+.wrong-item:last-child {
+    border-bottom: none;
+}
+
+.wrong-item .chord-name {
+    color: #f44336;
+    font-weight: 500;
+}
+
+.wrong-item .delete-btn {
+    background: none;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.wrong-item .delete-btn:hover {
+    color: #f44336;
+}
+
+.game-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.start-btn, .reset-btn, .submit-btn {
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.start-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.start-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.reset-btn {
+    background: #f5f5f5;
+    color: #666;
+}
+
+.reset-btn:hover {
+    background: #e0e0e0;
+}
+
+.submit-btn {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    max-width: 400px;
+}
+
+.modal-content h2 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.final-stats {
+    margin: 20px 0;
+}
+
+.final-stats p {
+    margin: 10px 0;
+    font-size: 1.1rem;
+}
+
+.final-stats span {
+    font-weight: bold;
+    color: #667eea;
+}
+
+.piano-container {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+}
+
+.piano-container h2 {
+    text-align: center;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.piano-hint {
+    text-align: center;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.piano-keys {
+    display: flex;
+    justify-content: center;
+    position: relative;
+    height: 200px;
+    margin-bottom: 30px;
+}
+
+.white-key {
+    width: 60px;
+    height: 200px;
+    background: linear-gradient(to bottom, #fff 0%, #f0f0f0 100%);
+    border: 1px solid #ccc;
+    border-radius: 0 0 8px 8px;
+    cursor: pointer;
+    transition: all 0.1s;
+    position: relative;
+    z-index: 1;
+    margin: 0 2px;
+}
+
+.white-key:hover {
+    background: linear-gradient(to bottom, #f0f0f0 0%, #e0e0e0 100%);
+}
+
+.white-key.active {
+    background: linear-gradient(to bottom, #667eea 0%, #764ba2 100%);
+    transform: translateY(2px);
+}
+
+.black-key {
+    width: 40px;
+    height: 120px;
+    background: linear-gradient(to bottom, #333 0%, #000 100%);
+    border-radius: 0 0 6px 6px;
+    cursor: pointer;
+    position: absolute;
+    z-index: 2;
+    transition: all 0.1s;
+}
+
+.black-key:hover {
+    background: linear-gradient(to bottom, #444 0%, #111 100%);
+}
+
+.black-key.active {
+    background: linear-gradient(to bottom, #764ba2 0%, #667eea 100%);
+    transform: translateY(2px);
+}
+
+.black-key[data-note="cs"] { left: 47px; }
+.black-key[data-note="ds"] { left: 111px; }
+.black-key[data-note="fs"] { left: 239px; }
+.black-key[data-note="gs"] { left: 303px; }
+.black-key[data-note="as"] { left: 367px; }
+
+.piano-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.chord-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.chord-selector label {
+    font-weight: 500;
+}
+
+.chord-selector select {
+    padding: 10px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.notes-display {
+    text-align: center;
+    padding: 15px;
+    background: #f8f9ff;
+    border-radius: 10px;
+}
+
+.notes-display .notes {
+    font-weight: bold;
+    color: #667eea;
+    font-size: 1.2rem;
+}
+
+.progression-container {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+}
+
+.progression-container h2, .progression-container h3 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.progression-selector {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f8f9ff;
+    border-radius: 15px;
+}
+
+.progression-selector label {
+    font-weight: 500;
+}
+
+.progression-selector select {
+    padding: 10px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    flex: 1;
+    max-width: 300px;
+}
+
+.custom-progression {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    border-radius: 15px;
+}
+
+.custom-progression input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.chord-builder {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.chord-builder select {
+    padding: 10px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.ear-training {
+    padding: 20px;
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    border-radius: 15px;
+}
+
+.ear-training p {
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.ear-training-area {
+    margin-top: 20px;
+    min-height: 100px;
+}
+
+.leaderboard-container {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+}
+
+.leaderboard-container h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+.leaderboard-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-box {
+    text-align: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    color: white;
+}
+
+.stat-number {
+    display: block;
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.leaderboard-list {
+    margin-bottom: 30px;
+}
+
+.leaderboard-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    transition: background 0.2s;
+}
+
+.leaderboard-item:hover {
+    background: #f8f9ff;
+}
+
+.leaderboard-item:first-child {
+    background: linear-gradient(135deg, #ffd700 0%, #ffb347 100%);
+    border-radius: 10px 10px 0 0;
+}
+
+.leaderboard-item:nth-child(2) {
+    background: linear-gradient(135deg, #c0c0c0 0%, #a8a8a8 100%);
+}
+
+.leaderboard-item:nth-child(3) {
+    background: linear-gradient(135deg, #cd7f32 0%, #b8860b 100%);
+}
+
+.rank {
+    width: 40px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.player-info {
+    flex: 1;
+    margin-left: 15px;
+}
+
+.player-name {
+    font-weight: 500;
+    font-size: 1.1rem;
+}
+
+.player-date {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.player-score {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #667eea;
+}
+
+.submit-score-form {
+    padding: 20px;
+    background: #f8f9ff;
+    border-radius: 15px;
+}
+
+.submit-score-form h3 {
+    margin-bottom: 15px;
+}
+
+.submit-score-form input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.submit-score-form input[readonly] {
+    background: #f5f5f5;
+    cursor: not-allowed;
+}
+
+@media (max-width: 900px) {
+    main {
+        grid-template-columns: 1fr;
+    }
+    
+    .options-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .chord-builder {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .leaderboard-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .piano-keys {
+        transform: scale(0.8);
+    }
+}

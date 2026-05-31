@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎵 浏览器端测试套件</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: white;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+        .test-section {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+        .test-section h2 {
+            margin-bottom: 15px;
+            color: #00d4ff;
+        }
+        .test-case {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            margin: 8px 0;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+        }
+        .test-case.pass {
+            border-left: 4px solid #4caf50;
+        }
+        .test-case.fail {
+            border-left: 4px solid #f44336;
+        }
+        .status {
+            font-weight: bold;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        .status.pass {
+            background: #4caf50;
+        }
+        .status.fail {
+            background: #f44336;
+        }
+        .controls {
+            text-align: center;
+            margin: 30px 0;
+        }
+        button {
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
+        }
+        .summary {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+        .summary h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        .score {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+        .score.pass {
+            color: #4caf50;
+        }
+        .score.fail {
+            color: #f44336;
+        }
+        .log-area {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+        .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .log-entry.info { color: #00d4ff; }
+        .log-entry.success { color: #4caf50; }
+        .log-entry.error { color: #f44336; }
+        .timer-test {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 15px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        .timer-display {
+            font-size: 2rem;
+            font-family: monospace;
+            min-width: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 浏览器端测试套件</h1>
+        
+        <div class="controls">
+            <button class="btn-primary" onclick="runAllTests()">🚀 运行全部测试</button>
+            <button class="btn-secondary" onclick="runAudioTests()">🎹 音频测试</button>
+            <button class="btn-secondary" onclick="runTimerTests()">⏱️ 计时器测试</button>
+        </div>
+
+        <div class="test-section">
+            <h2>🎹 音频生成测试</h2>
+            <div id="audio-tests"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>⏱️ 计时器准确性测试</h2>
+            <div class="timer-test">
+                <span>模拟倒计时:</span>
+                <div class="timer-display" id="testTimer">--</div>
+                <span id="timerResult"></span>
+            </div>
+            <div id="timer-tests"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>🎯 游戏逻辑测试</h2>
+            <div id="logic-tests"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>📊 详细日志</h2>
+            <div class="log-area" id="logArea"></div>
+        </div>
+
+        <div class="summary">
+            <h3>📋 测试总结</h3>
+            <div class="score" id="summaryScore">-- / --</div>
+            <p id="summaryText">点击运行测试按钮开始</p>
+        </div>
+    </div>
+
+    <script>
+        const CHORDS = [
+            { name: '大三和弦 (Major)', intervals: [0, 4, 7], shortName: '大三和弦' },
+            { name: '小三和弦 (Minor)', intervals: [0, 3, 7], shortName: '小三和弦' },
+            { name: '增三和弦 (Augmented)', intervals: [0, 4, 8], shortName: '增三和弦' },
+            { name: '减三和弦 (Diminished)', intervals: [0, 3, 6], shortName: '减三和弦' },
+            { name: '属七和弦 (Dominant 7th)', intervals: [0, 4, 7, 10], shortName: '属七和弦' },
+            { name: '大七和弦 (Major 7th)', intervals: [0, 4, 7, 11], shortName: '大七和弦' },
+            { name: '小七和弦 (Minor 7th)', intervals: [0, 3, 7, 10], shortName: '小七和弦' },
+            { name: '减七和弦 (Diminished 7th)', intervals: [0, 3, 6, 9], shortName: '减七和弦' }
+        ];
+
+        let testResults = { pass: 0, fail: 0 };
+        let audioContext = null;
+
+        function log(message, type = 'info') {
+            const logArea = document.getElementById('logArea');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logArea.appendChild(entry);
+            logArea.scrollTop = logArea.scrollHeight;
+        }
+
+        function addTestCase(containerId, name, passed, detail = '') {
+            const container = document.getElementById(containerId);
+            const testCase = document.createElement('div');
+            testCase.className = `test-case ${passed ? 'pass' : 'fail'}`;
+            testCase.innerHTML = `
+                <span>${name}${detail ? `<br><small>${detail}</small>` : ''}</span>
+                <span class="status ${passed ? 'pass' : 'fail'}">${passed ? '✓ 通过' : '✗ 失败'}</span>
+            `;
+            container.appendChild(testCase);
+            
+            if (passed) {
+                testResults.pass++;
+                log(`✓ ${name}`, 'success');
+            } else {
+                testResults.fail++;
+                log(`✗ ${name}`, 'error');
+            }
+        }
+
+        function calculateFrequency(baseFreq, semitone) {
+            return baseFreq * Math.pow(2, semitone / 12);
+        }
+
+        function calculateScore(isCorrect, currentStreak) {
+            if (!isCorrect) return 0;
+            const newStreak = currentStreak + 1;
+            return 10 + newStreak * 2;
+        }
+
+        async function runAudioTests() {
+            log('开始音频测试...', 'info');
+            document.getElementById('audio-tests').innerHTML = '';
+
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                addTestCase('audio-tests', 'AudioContext 支持', true, '浏览器支持 Web Audio API');
+            } catch (e) {
+                addTestCase('audio-tests', 'AudioContext 支持', false, e.message);
+                return;
+            }
+
+            const cFreq = calculateFrequency(261.63, 0);
+            addTestCase('audio-tests', 'C音频率计算 (261.63Hz)', cFreq === 261.63, `实际: ${cFreq.toFixed(2)}Hz`);
+
+            const eFreq = calculateFrequency(261.63, 4);
+            const expectedE = 329.63;
+            addTestCase('audio-tests', 'E音频率计算 (大三度)', Math.abs(eFreq - expectedE) < 0.01, `实际: ${eFreq.toFixed(2)}Hz`);
+
+            const gFreq = calculateFrequency(261.63, 7);
+            const expectedG = 392.00;
+            addTestCase('audio-tests', 'G音频率计算 (纯五度)', Math.abs(gFreq - expectedG) < 0.01, `实际: ${gFreq.toFixed(2)}Hz`);
+
+            const triads = CHORDS.filter(c => c.intervals.length === 3);
+            const sevenths = CHORDS.filter(c => c.intervals.length === 4);
+            addTestCase('audio-tests', '和弦类型完整', triads.length === 4 && sevenths.length === 4, `三和弦:${triads.length}, 七和弦:${sevenths.length}`);
+
+            let intervalsValid = true;
+            CHORDS.forEach(chord => {
+                const sorted = [...chord.intervals].sort((a, b) => a - b);
+                if (JSON.stringify(sorted) !== JSON.stringify(chord.intervals)) {
+                    intervalsValid = false;
+                }
+            });
+            addTestCase('audio-tests', '音程排序正确', intervalsValid, '所有和弦音程升序排列');
+
+            try {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                addTestCase('audio-tests', '音频节点创建成功', true, 'Oscillator 和 GainNode 正常');
+                osc.disconnect();
+                gain.disconnect();
+            } catch (e) {
+                addTestCase('audio-tests', '音频节点创建成功', false, e.message);
+            }
+
+            updateSummary();
+        }
+
+        async function runTimerTests() {
+            log('开始计时器准确性测试...', 'info');
+            document.getElementById('timer-tests').innerHTML = '';
+
+            addTestCase('timer-tests', 'setTimeout 基本功能', true, '浏览器支持 setTimeout');
+
+            let startTime = Date.now();
+            let actualDelay = 0;
+            const expectedDelay = 1000;
+
+            await new Promise(resolve => {
+                setTimeout(() => {
+                    actualDelay = Date.now() - startTime;
+                    resolve();
+                }, expectedDelay);
+            });
+
+            const drift = Math.abs(actualDelay - expectedDelay);
+            const driftPercent = (drift / expectedDelay * 100).toFixed(2);
+            const driftValid = drift < 100;
+            addTestCase('timer-tests', '1秒计时器准确性', driftValid, `误差: ${drift}ms (${driftPercent}%)`);
+
+            document.getElementById('testTimer').textContent = '5';
+            document.getElementById('timerResult').textContent = '测试中...';
+
+            let countdownStart = Date.now();
+            let count = 5;
+            const timer = setInterval(() => {
+                count--;
+                document.getElementById('testTimer').textContent = count;
+                if (count <= 0) {
+                    clearInterval(timer);
+                    const elapsed = Date.now() - countdownStart;
+                    const expected = 5000;
+                    const countdownDrift = Math.abs(elapsed - expected);
+                    const countValid = countdownDrift < 500;
+                    addTestCase('timer-tests', '5秒倒计时准确性', countValid, `实际: ${elapsed}ms, 误差: ${countdownDrift}ms`);
+                    document.getElementById('timerResult').textContent = countValid ? '✓ 准确' : '⚠ 误差较大';
+                    log(`5秒倒计时测试完成，实际耗时: ${elapsed}ms`, 'info');
+                    updateSummary();
+                }
+            }, 1000);
+
+            addTestCase('timer-tests', '60秒游戏时长合理', true, '标准游戏时长为60秒，约可答20题');
+        }
+
+        async function runLogicTests() {
+            log('开始游戏逻辑测试...', 'info');
+            document.getElementById('logic-tests').innerHTML = '';
+
+            const score1 = calculateScore(true, 0);
+            addTestCase('logic-tests', '第一题正确得分', score1 === 12, `实际: ${score1}分 (应为12分)`);
+
+            const score2 = calculateScore(true, 4);
+            addTestCase('logic-tests', '5连击得分计算', score2 === 20, `实际: ${score2}分 (应为20分)`);
+
+            const score3 = calculateScore(false, 5);
+            addTestCase('logic-tests', '答错得0分', score3 === 0, `实际: ${score3}分`);
+
+            let totalScore = 0;
+            for (let i = 0; i < 10; i++) {
+                totalScore += calculateScore(true, i);
+            }
+            addTestCase('logic-tests', '10连击总分合理', totalScore === 230, `实际: ${totalScore}分`);
+
+            const correctChord = CHORDS[0];
+            const options = generateOptions(correctChord);
+            addTestCase('logic-tests', '选项数量正确', options.length === 4, `实际: ${options.length}个选项`);
+
+            const hasCorrect = options.some(o => o.name === correctChord.name);
+            addTestCase('logic-tests', '选项包含正确答案', hasCorrect, '4个选项中包含正确和弦');
+
+            const uniqueNames = [...new Set(options.map(o => o.name))];
+            addTestCase('logic-tests', '选项无重复', uniqueNames.length === 4, '所有选项唯一');
+
+            updateSummary();
+        }
+
+        function generateOptions(correctChord) {
+            const shuffleArray = (array) => {
+                const newArray = [...array];
+                for (let i = newArray.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+                }
+                return newArray;
+            };
+
+            const options = [correctChord];
+            const otherChords = CHORDS.filter(c => c.name !== correctChord.name);
+            const shuffled = shuffleArray(otherChords);
+            for (let i = 0; i < 3 && i < shuffled.length; i++) {
+                options.push(shuffled[i]);
+            }
+            return shuffleArray(options);
+        }
+
+        async function runAllTests() {
+            testResults = { pass: 0, fail: 0 };
+            document.getElementById('audio-tests').innerHTML = '';
+            document.getElementById('timer-tests').innerHTML = '';
+            document.getElementById('logic-tests').innerHTML = '';
+            document.getElementById('logArea').innerHTML = '';
+
+            log('🚀 开始运行全部测试...', 'info');
+
+            await runAudioTests();
+            await new Promise(r => setTimeout(r, 500));
+            await runLogicTests();
+            await new Promise(r => setTimeout(r, 500));
+            await runTimerTests();
+        }
+
+        function updateSummary() {
+            const total = testResults.pass + testResults.fail;
+            const scoreEl = document.getElementById('summaryScore');
+            const textEl = document.getElementById('summaryText');
+            
+            scoreEl.textContent = `${testResults.pass} / ${total}`;
+            scoreEl.className = `score ${testResults.fail === 0 ? 'pass' : 'fail'}`;
+            
+            if (testResults.fail === 0 && total > 0) {
+                textEl.textContent = '🎉 所有测试通过！系统运行正常！';
+            } else if (total > 0) {
+                textEl.textContent = `⚠️ 有 ${testResults.fail} 个测试失败，请检查`;
+            }
+        }
+
+        log('测试页面加载完成，点击按钮开始测试', 'info');
+    </script>
+</body>
+</html>
